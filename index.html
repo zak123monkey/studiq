@@ -1,239 +1,388 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Studiq</title>
+<title>Studiq - Ultimate Study Platform</title>
 
 <style>
+/* ================= GLOBAL STYLE ================= */
 body {
   margin: 0;
-  font-family: Arial;
-  display: flex;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a, #020617);
   color: white;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-/* BACKGROUND GLOW */
-body::before, body::after {
-  content: "";
+/* Floating background design */
+.shape {
   position: absolute;
-  width: 500px;
-  height: 500px;
-  background: rgba(59,130,246,0.3);
   border-radius: 50%;
-  filter: blur(100px);
-  animation: move 10s infinite alternate;
+  opacity: 0.08;
+  animation: float 15s infinite ease-in-out;
 }
 
-body::before { top: -150px; left: -150px; }
-body::after { bottom: -150px; right: -150px; }
-
-@keyframes move {
-  from { transform: translateY(0); }
-  to { transform: translateY(50px); }
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-80px); }
+  100% { transform: translateY(0); }
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 220px;
+/* Navigation */
+nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
   background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  height: 100vh;
-  padding: 20px;
-  z-index: 1;
 }
 
-.sidebar h2 {
-  text-align: center;
-}
-
-.sidebar button {
-  width: 100%;
-  margin: 10px 0;
-  padding: 12px;
+nav button {
+  background: none;
   border: none;
-  background: transparent;
   color: white;
-  border-radius: 8px;
+  font-size: 18px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.sidebar button:hover {
-  background: #3b82f6;
-  transform: translateX(5px);
-}
-
-/* MAIN */
-.main {
-  flex: 1;
+/* Pages */
+.page {
+  display: none;
   padding: 40px;
-  z-index: 1;
+  max-width: 1000px;
+  margin: auto;
 }
-
-/* PAGES */
-.page { display: none; }
 .active { display: block; }
 
-/* GLASS BOX */
+/* Card UI */
 .box {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(15px);
-  padding: 25px;
+  background: rgba(255,255,255,0.08);
+  padding: 30px;
   border-radius: 20px;
-  max-width: 500px;
-  margin: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  transition: 0.3s;
+  margin-top: 20px;
 }
 
-.box:hover {
-  transform: translateY(-5px);
-}
-
-/* INPUT */
+/* Inputs */
 textarea, input {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  margin-top: 10px;
+  padding: 15px;
+  border-radius: 12px;
   border: none;
+  margin-top: 10px;
+  font-size: 16px;
 }
 
-/* BUTTON */
+/* Buttons */
 button.main {
   margin-top: 10px;
-  padding: 12px;
+  padding: 15px;
+  border-radius: 12px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: #3b82f6;
   color: white;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 button.main:hover {
-  transform: scale(1.05);
+  background: #2563eb;
 }
 
-/* TIMER */
-#time {
-  font-size: 45px;
-  margin: 15px 0;
-  font-weight: bold;
+/* Tools */
+.tools button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+}
+
+/* Game */
+#gameCanvas {
+  background: black;
+  display: block;
+  margin: auto;
 }
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-<h2>📚 Studiq</h2>
-<button onclick="showPage('home')">🏠 Home</button>
-<button onclick="showPage('timer')">⏱️ Timer</button>
-<button onclick="showPage('notes')">🧠 Notes</button>
-<button onclick="showPage('planner')">📅 Planner</button>
-</div>
+<!-- Background shapes -->
+<div class="shape" style="width:300px;height:300px;background:#00f;top:10%;left:10%;"></div>
+<div class="shape" style="width:250px;height:250px;background:#0ff;top:70%;left:80%;"></div>
+<div class="shape" style="width:200px;height:200px;background:#f0f;top:50%;left:20%;"></div>
 
-<div class="main">
+<!-- NAV -->
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('timer')">Timer</button>
+<button onclick="showPage('notes')">Summarizer</button>
+<button onclick="showPage('planner')">Planner</button>
+<button onclick="showPage('tools')">Tools</button>
+</nav>
 
+<!-- HOME -->
 <div id="home" class="page active">
-<h1>Study Smarter</h1>
-<p>Your all-in-one study system</p>
+<h1>Welcome & Study</h1>
+<p style="text-align:center;">
+"to be is to do" — zak123monkey
+</p>
+
+<div class="box">
+<p>
+Welcome to Studiq — your all-in-one study system designed to help students focus better, stay organized,
+and improve productivity every single day. This platform combines tools like timers, planners, note summarization,
+and even a break game so you can study smarter without burnout.
+</p>
+
+<p>
+Use the timer to focus, the planner to organize your time, the summarizer to simplify your notes,
+and the tools section for productivity boosts. Everything here is designed to help you succeed.
+</p>
+</div>
 </div>
 
+<!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
 <h2>⏱️ Study Timer</h2>
-<input id="minutes" type="number" placeholder="Enter minutes">
-<div id="time">00:00</div>
-<button class="main" onclick="startTimer()">Start</button>
-<button class="main" onclick="resetTimer()">Reset</button>
+
+<p>Enter how many minutes you want to study. Stay focused until it ends.</p>
+
+<input id="mins" placeholder="Enter minutes">
+<button class="main" onclick="startTimer()">Start Timer</button>
+
+<h1 id="time">00:00</h1>
 </div>
 </div>
 
+<!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
-<h2>🧠 Notes Summarizer</h2>
-<textarea id="text"></textarea>
+<h2>🧠 Smart Summarizer</h2>
+
+<p>
+Paste your notes below. This tool will:
+<br>• Shorten long paragraphs  
+<br>• Extract key ideas  
+<br>• Help you revise faster  
+</p>
+
+<textarea id="text" placeholder="Paste your notes here..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
+
 <div id="result"></div>
 </div>
 </div>
 
+<!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
-<h2>📅 Smart Planner</h2>
-<textarea id="schedule"></textarea>
-<button class="main" onclick="generatePlan()">Generate Plan</button>
-<div id="planResult"></div>
+<h2>📅 Study Planner</h2>
+
+<p>Separate tasks with commas and it will create a daily plan.</p>
+
+<textarea id="plan" placeholder="Math, Science, English..."></textarea>
+<button class="main" onclick="makePlan()">Generate Plan</button>
+
+<div id="planOut"></div>
 </div>
 </div>
 
+<!-- TOOLS -->
+<div id="tools" class="page">
+<div class="box tools">
+
+<h3>💬 Motivation</h3>
+<button onclick="quote()">Get Motivation</button>
+<p id="quote"></p>
+
+<h3>📝 Task Manager</h3>
+<input id="taskInput" placeholder="Add a task">
+<button onclick="addTask()">Add Task</button>
+<ul id="tasks"></ul>
+
+<h3>🎯 Goal Tracker</h3>
+<input id="goalInput" placeholder="Your main goal">
+<button onclick="setGoal()">Save Goal</button>
+<p id="goal"></p>
+
+<h3>🎮 Break Game</h3>
+<button onclick="openGame()">Play Game</button>
+<p>Move with arrow keys. Collect coins. Avoid the enemy.</p>
+
+<h3>🧠 Smart Study Tools</h3>
+<button onclick="tool('focus')">Deep Focus</button>
+<button onclick="tool('memory')">Memory Trick</button>
+<button onclick="tool('exam')">Exam Hack</button>
+<button onclick="tool('energy')">Energy Boost</button>
+<p id="toolOutput"></p>
+
+</div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black;">
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
 
-// NAV
-function showPage(page) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
+/* ================= NAV ================= */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-// TIMER
-let t = 0;
-let int;
-
-function startTimer() {
+/* ================= TIMER ================= */
+let t,int;
+function startTimer(){
+  let m=document.getElementById("mins").value;
+  t=m*60;
   clearInterval(int);
-  let mins = document.getElementById("minutes").value;
-  if (!mins) return alert("Enter minutes!");
-  t = mins * 60;
-
-  int = setInterval(() => {
-    if (t <= 0) {
-      clearInterval(int);
-      alert("Time's up!");
-      return;
-    }
-
+  int=setInterval(()=>{
+    let min=Math.floor(t/60);
+    let sec=t%60;
+    document.getElementById("time").innerText=min+":"+(sec<10?"0":"")+sec;
     t--;
-    let m = Math.floor(t/60);
-    let s = t%60;
-
-    document.getElementById("time").innerText =
-      m + ":" + (s<10?"0":"") + s;
-
-  }, 1000);
+  },1000);
 }
 
-function resetTimer() {
-  clearInterval(int);
-  document.getElementById("time").innerText = "00:00";
+/* ================= SUMMARIZER ================= */
+function summarize(){
+  let text=document.getElementById("text").value;
+  let sentences=text.split(".");
+  let summary=sentences.slice(0,3).join(".");
+  document.getElementById("result").innerHTML="<b>Summary:</b><br>"+summary;
 }
 
-// SUMMARY
-function summarize() {
-  let text = document.getElementById("text").value;
-  let sentences = text.split(".");
-  document.getElementById("result").innerHTML =
-    sentences.slice(0,2).join(".");
+/* ================= PLANNER ================= */
+function makePlan(){
+  let t=document.getElementById("plan").value.split(",");
+  let out="";
+  t.forEach((d,i)=>{out+="Day "+(i+1)+": "+d+"<br>";});
+  document.getElementById("planOut").innerHTML=out;
 }
 
-// PLANNER
-function generatePlan() {
-  let text = document.getElementById("schedule").value;
-  let subjects = ["Study"];
+/* ================= MOTIVATION ================= */
+let quotes=[
+"Stay focused and never give up",
+"Small progress is still progress",
+"Discipline beats motivation",
+"Consistency creates success"
+];
 
-  if (text.toLowerCase().includes("math")) subjects.push("Math");
-  if (text.toLowerCase().includes("bio")) subjects.push("Biology");
+function quote(){
+  document.getElementById("quote").innerText=
+  quotes[Math.floor(Math.random()*quotes.length)];
+}
 
-  let plan = "";
-  subjects.forEach((s,i)=>{
-    plan += `<p>Day ${i+1}: ${s}</p>`;
+/* ================= TASKS ================= */
+let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
+
+function render(){
+  let list=document.getElementById("tasks");
+  list.innerHTML="";
+  tasks.forEach((t,i)=>{
+    let li=document.createElement("li");
+    li.innerHTML=t+" <button onclick='del("+i+")'>X</button>";
+    list.appendChild(li);
+  });
+}
+
+function addTask(){
+  let t=document.getElementById("taskInput").value;
+  tasks.push(t);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  render();
+}
+
+function del(i){
+  tasks.splice(i,1);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  render();
+}
+
+render();
+
+/* ================= GOAL ================= */
+function setGoal(){
+  let g=document.getElementById("goalInput").value;
+  localStorage.setItem("goal",g);
+  document.getElementById("goal").innerText=g;
+}
+
+/* ================= GAME ================= */
+let canvas,ctx,player,enemy,coins,score,run;
+
+function openGame(){
+  document.getElementById("gameScreen").style.display="block";
+  canvas=document.getElementById("gameCanvas");
+  ctx=canvas.getContext("2d");
+
+  player={x:100,y:100};
+  enemy={x:400,y:300};
+  coins=[];
+  for(let i=0;i<15;i++){
+    coins.push({x:Math.random()*780,y:Math.random()*580});
+  }
+  score=0;
+  run=true;
+  loop();
+}
+
+function closeGame(){
+  run=false;
+  document.getElementById("gameScreen").style.display="none";
+}
+
+function loop(){
+  if(!run) return;
+
+  ctx.clearRect(0,0,800,600);
+
+  ctx.fillStyle="cyan";
+  ctx.fillRect(player.x,player.y,20,20);
+
+  ctx.fillStyle="red";
+  enemy.x+=(player.x-enemy.x)*0.02;
+  enemy.y+=(player.y-enemy.y)*0.02;
+  ctx.fillRect(enemy.x,enemy.y,25,25);
+
+  ctx.fillStyle="yellow";
+  coins.forEach((c,i)=>{
+    ctx.fillRect(c.x,c.y,10,10);
+    if(Math.abs(player.x-c.x)<15 && Math.abs(player.y-c.y)<15){
+      coins.splice(i,1);
+      score++;
+    }
   });
 
-  document.getElementById("planResult").innerHTML = plan;
+  if(Math.abs(player.x-enemy.x)<20){
+    ctx.fillStyle="white";
+    ctx.fillText("Game Over Score: "+score,250,300);
+    run=false;
+    return;
+  }
+
+  ctx.fillStyle="white";
+  ctx.fillText("Score: "+score,10,20);
+
+  requestAnimationFrame(loop);
+}
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="ArrowUp") player.y-=10;
+  if(e.key==="ArrowDown") player.y+=10;
+  if(e.key==="ArrowLeft") player.x-=10;
+  if(e.key==="ArrowRight") player.x+=10;
+});
+
+/* ================= SMART TOOLS ================= */
+function tool(type){
+  let text="";
+  if(type==="focus") text="Focus 25 minutes, no distractions.";
+  if(type==="memory") text="Teach the topic out loud.";
+  if(type==="exam") text="Practice past papers.";
+  if(type==="energy") text="Drink water and move.";
+  document.getElementById("toolOutput").innerText=text;
 }
 
 </script>
