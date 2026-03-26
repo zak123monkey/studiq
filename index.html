@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Studiq - Ultimate Study Platform</title>
 
-<!-- GOOGLE ANALYTICS (REAL TRACKING) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-XXXXXXXXXX');
-</script>
+<!-- ✅ SEO TITLE -->
+<title>Studiq - Free Study Timer, Planner, Notes & Student Productivity Tools</title>
+
+<!-- ✅ SEO META -->
+<meta name="description" content="Studiq is a free study platform with a timer, planner, note summarizer, and productivity tools to help students focus and succeed.">
+<meta name="keywords" content="study timer, study planner, student tools, focus timer, productivity, notes summarizer">
+<meta name="author" content="zak123monkey">
 
 <style>
 /* ================= GLOBAL STYLE ================= */
@@ -107,13 +105,6 @@ button.main:hover {
   display: block;
   margin: auto;
 }
-
-/* VISITOR BOX */
-.visitor-box {
-  text-align: center;
-  font-size: 20px;
-  margin-top: 20px;
-}
 </style>
 </head>
 
@@ -135,14 +126,22 @@ button.main:hover {
 
 <!-- HOME -->
 <div id="home" class="page active">
-<h1>Welcome & Study</h1>
+<h1>Free Study Timer & Planner for Students</h1>
 
-<div class="visitor-box">
-👥 Visitors: <span id="visits">Counting...</span>
-</div>
+<p style="text-align:center;">
+"to be is to do" — zak123monkey
+</p>
 
 <div class="box">
-<p>Welcome to Studiq — your all-in-one study system.</p>
+<p>
+Studiq is a free study platform that includes a study timer, planner, note summarizer,
+and productivity tools designed to help students stay focused, organized, and improve performance.
+</p>
+
+<p>
+Use the study timer to focus, the planner to organize your tasks, the summarizer to simplify notes,
+and the tools section to boost productivity and learning efficiency.
+</p>
 </div>
 </div>
 
@@ -151,7 +150,7 @@ button.main:hover {
 <div class="box">
 <h2>⏱️ Study Timer</h2>
 <input id="mins" placeholder="Enter minutes">
-<button class="main" onclick="startTimer()">Start</button>
+<button class="main" onclick="startTimer()">Start Timer</button>
 <h1 id="time">00:00</h1>
 </div>
 </div>
@@ -159,8 +158,8 @@ button.main:hover {
 <!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
-<h2>🧠 Summarizer</h2>
-<textarea id="text"></textarea>
+<h2>🧠 Smart Summarizer</h2>
+<textarea id="text" placeholder="Paste your notes here..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
 <div id="result"></div>
 </div>
@@ -169,8 +168,9 @@ button.main:hover {
 <!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
-<textarea id="plan"></textarea>
-<button onclick="makePlan()">Plan</button>
+<h2>📅 Study Planner</h2>
+<textarea id="plan" placeholder="Math, Science, English..."></textarea>
+<button class="main" onclick="makePlan()">Generate Plan</button>
 <div id="planOut"></div>
 </div>
 </div>
@@ -178,21 +178,50 @@ button.main:hover {
 <!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box tools">
-<input id="taskInput">
+
+<h3>💬 Motivation</h3>
+<button onclick="quote()">Get Motivation</button>
+<p id="quote"></p>
+
+<h3>📝 Task Manager</h3>
+<input id="taskInput" placeholder="Add a task">
 <button onclick="addTask()">Add Task</button>
 <ul id="tasks"></ul>
+
+<h3>🎯 Goal Tracker</h3>
+<input id="goalInput" placeholder="Your main goal">
+<button onclick="setGoal()">Save Goal</button>
+<p id="goal"></p>
+
+<h3>🎮 Break Game</h3>
+<button onclick="openGame()">Play Game</button>
+<p>Move with arrow keys. Collect coins. Avoid the enemy.</p>
+
+<h3>🧠 Smart Study Tools</h3>
+<button onclick="tool('focus')">Deep Focus</button>
+<button onclick="tool('memory')">Memory Trick</button>
+<button onclick="tool('exam')">Exam Hack</button>
+<button onclick="tool('energy')">Energy Boost</button>
+<p id="toolOutput"></p>
+
 </div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black;">
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
 
-/* NAV */
+/* ================= NAV ================= */
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* TIMER */
+/* ================= TIMER ================= */
 let t,int;
 function startTimer(){
   let m=document.getElementById("mins").value;
@@ -206,14 +235,15 @@ function startTimer(){
   },1000);
 }
 
-/* SUMMARIZER */
+/* ================= SUMMARIZER ================= */
 function summarize(){
   let text=document.getElementById("text").value;
-  let summary=text.split(".").slice(0,3).join(".");
-  document.getElementById("result").innerHTML=summary;
+  let sentences=text.split(".");
+  let summary=sentences.slice(0,3).join(".");
+  document.getElementById("result").innerHTML="<b>Summary:</b><br>"+summary;
 }
 
-/* PLANNER */
+/* ================= PLANNER ================= */
 function makePlan(){
   let t=document.getElementById("plan").value.split(",");
   let out="";
@@ -221,7 +251,20 @@ function makePlan(){
   document.getElementById("planOut").innerHTML=out;
 }
 
-/* TASKS */
+/* ================= MOTIVATION ================= */
+let quotes=[
+"Stay focused and never give up",
+"Small progress is still progress",
+"Discipline beats motivation",
+"Consistency creates success"
+];
+
+function quote(){
+  document.getElementById("quote").innerText=
+  quotes[Math.floor(Math.random()*quotes.length)];
+}
+
+/* ================= TASKS ================= */
 let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
 
 function render(){
@@ -233,24 +276,104 @@ function render(){
     list.appendChild(li);
   });
 }
+
 function addTask(){
   let t=document.getElementById("taskInput").value;
   tasks.push(t);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
+
 function del(i){
   tasks.splice(i,1);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
+
 render();
 
-/* VISITOR COUNTER (LOCAL FALLBACK) */
-let count = localStorage.getItem("visits") || 0;
-count++;
-localStorage.setItem("visits", count);
-document.getElementById("visits").innerText = count;
+/* ================= GOAL ================= */
+function setGoal(){
+  let g=document.getElementById("goalInput").value;
+  localStorage.setItem("goal",g);
+  document.getElementById("goal").innerText=g;
+}
+
+/* ================= GAME ================= */
+let canvas,ctx,player,enemy,coins,score,run;
+
+function openGame(){
+  document.getElementById("gameScreen").style.display="block";
+  canvas=document.getElementById("gameCanvas");
+  ctx=canvas.getContext("2d");
+
+  player={x:100,y:100};
+  enemy={x:400,y:300};
+  coins=[];
+  for(let i=0;i<15;i++){
+    coins.push({x:Math.random()*780,y:Math.random()*580});
+  }
+  score=0;
+  run=true;
+  loop();
+}
+
+function closeGame(){
+  run=false;
+  document.getElementById("gameScreen").style.display="none";
+}
+
+function loop(){
+  if(!run) return;
+
+  ctx.clearRect(0,0,800,600);
+
+  ctx.fillStyle="cyan";
+  ctx.fillRect(player.x,player.y,20,20);
+
+  ctx.fillStyle="red";
+  enemy.x+=(player.x-enemy.x)*0.02;
+  enemy.y+=(player.y-enemy.y)*0.02;
+  ctx.fillRect(enemy.x,enemy.y,25,25);
+
+  ctx.fillStyle="yellow";
+  coins.forEach((c,i)=>{
+    ctx.fillRect(c.x,c.y,10,10);
+    if(Math.abs(player.x-c.x)<15 && Math.abs(player.y-c.y)<15){
+      coins.splice(i,1);
+      score++;
+    }
+  });
+
+  if(Math.abs(player.x-enemy.x)<20){
+    ctx.fillStyle="white";
+    ctx.fillText("Game Over Score: "+score,250,300);
+    run=false;
+    return;
+  }
+
+  ctx.fillStyle="white";
+  ctx.fillText("Score: "+score,10,20);
+
+  requestAnimationFrame(loop);
+}
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="ArrowUp") player.y-=10;
+  if(e.key==="ArrowDown") player.y+=10;
+  if(e.key==="ArrowLeft") player.x-=10;
+  if(e.key==="ArrowRight") player.x+=10;
+});
+
+/* ================= SMART TOOLS ================= */
+function tool(type){
+  let text="";
+  if(type==="focus") text="Focus 25 minutes, no distractions.";
+  if(type==="memory") text="Teach the topic out loud.";
+  if(type==="exam") text="Practice past papers.";
+  if(type==="energy") text="Drink water and move.";
+  document.getElementById("toolOutput").innerText=text;
+}
 
 </script>
 
