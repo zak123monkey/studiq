@@ -3,114 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studiq - Real Working App</title>
+<title>Studiq - Fully Working</title>
 <style>
 body{font-family:Arial;background:#0f172a;color:#fff;margin:0}
-header{display:flex;justify-content:space-between;padding:20px;background:#111827}
-a{color:#ccc;margin-left:15px;cursor:pointer}
-a:hover{color:#fff}
-.section{display:none;padding:40px;text-align:center}
+nav{display:flex;justify-content:space-around;padding:15px;background:#111827}
+nav button{background:none;border:none;color:#ccc;font-size:16px;cursor:pointer}
+nav button:hover{color:#fff}
+.page{display:none;padding:30px;text-align:center}
 .active{display:block}
-button{padding:10px 20px;margin:10px;border:none;border-radius:8px;background:#3b82f6;color:white;cursor:pointer}
+button.main{padding:10px 20px;margin:10px;border:none;border-radius:8px;background:#3b82f6;color:white;cursor:pointer}
 input,textarea{width:80%;padding:10px;margin:10px;border-radius:8px;border:none}
 li{margin:5px 0}
 </style>
 </head>
 <body>
 
-<header>
-<div>Studiq</div>
-<div>
-<a onclick="show('home')">Home</a>
-<a onclick="show('timer')">Timer</a>
-<a onclick="show('planner')">Planner</a>
-<a onclick="show('summarizer')">Summarizer</a>
-</div>
-</header>
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('timer')">Timer</button>
+<button onclick="showPage('planner')">Planner</button>
+<button onclick="showPage('notes')">Summarizer</button>
+</nav>
 
-<div id="home" class="section active">
-<h1>Study Smarter</h1>
-<p>All tools actually working.</p>
-<button onclick="show('timer')">Start</button>
+<div id="home" class="page active">
+<h1>Welcome to Studiq</h1>
+<p>Everything works now. Start studying.</p>
+<button class="main" onclick="showPage('timer')">Start Study</button>
+<br>
 <img src="https://c.statcounter.com/13212872/0/14c16a4e/1/">
 </div>
 
-<div id="timer" class="section">
-<h1>Timer</h1>
-<div id="time">25:00</div>
-<button onclick="startTimer()">Start</button>
-<button onclick="pauseTimer()">Pause</button>
-<button onclick="resetTimer()">Reset</button>
+<div id="timer" class="page">
+<h2>Study Timer</h2>
+<input id="mins" placeholder="Enter minutes">
+<button class="main" onclick="startTimer()">Start</button>
+<button class="main" onclick="pauseTimer()">Pause</button>
+<button class="main" onclick="resetTimer()">Reset</button>
+<h1 id="time">00:00</h1>
 </div>
 
-<div id="planner" class="section">
-<h1>Planner</h1>
-<input id="taskInput" placeholder="Task">
-<button onclick="addTask()">Add</button>
-<ul id="list"></ul>
+<div id="planner" class="page">
+<h2>Planner</h2>
+<input id="taskInput" placeholder="Add task">
+<button class="main" onclick="addTask()">Add</button>
+<ul id="tasks"></ul>
 </div>
 
-<div id="summarizer" class="section">
-<h1>Summarizer (Real basic)</h1>
-<textarea id="text" placeholder="Paste text"></textarea>
-<button onclick="summarize()">Summarize</button>
+<div id="notes" class="page">
+<h2>Summarizer</h2>
+<textarea id="text" placeholder="Paste notes"></textarea>
+<button class="main" onclick="summarize()">Summarize</button>
 <p id="result"></p>
 </div>
 
 <script>
-function show(id){
- document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+// NAVIGATION (FIXED)
+function showPage(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
  document.getElementById(id).classList.add('active');
 }
 
-// TIMER (real working)
-let t=1500, interval;
+// TIMER (FIXED)
+let t=0, interval;
 function startTimer(){
+ let m=parseInt(document.getElementById('mins').value);
+ if(isNaN(m)||m<=0){alert('Enter valid minutes');return;}
+ t=m*60;
  clearInterval(interval);
  interval=setInterval(()=>{
-  if(t<=0) return;
+  if(t<=0){clearInterval(interval);return;}
   t--;
   updateTime();
  },1000);
 }
 function pauseTimer(){clearInterval(interval)}
-function resetTimer(){t=1500;updateTime();clearInterval(interval)}
+function resetTimer(){clearInterval(interval);t=0;updateTime();}
 function updateTime(){
- let m=Math.floor(t/60),s=t%60;
- document.getElementById('time').innerText=`${m}:${s<10?'0':''}${s}`;
+ let min=Math.floor(t/60),sec=t%60;
+ document.getElementById('time').innerText=`${min}:${sec<10?'0':''}${sec}`;
 }
 
-// PLANNER (SAVES DATA)
-function loadTasks(){
- let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
- let list=document.getElementById('list');
+// PLANNER (WORKING + SAVES)
+let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+function render(){
+ let list=document.getElementById('tasks');
  list.innerHTML='';
  tasks.forEach((task,i)=>{
   let li=document.createElement('li');
-  li.innerText=task;
-  li.onclick=()=>deleteTask(i);
+  li.innerHTML=task+" <button onclick='del("+i+")'>X</button>";
   list.appendChild(li);
  });
 }
 function addTask(){
  let input=document.getElementById('taskInput');
- let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+ if(!input.value) return;
  tasks.push(input.value);
  localStorage.setItem('tasks',JSON.stringify(tasks));
  input.value='';
- loadTasks();
+ render();
 }
-function deleteTask(i){
- let tasks=JSON.parse(localStorage.getItem('tasks'));
+function del(i){
  tasks.splice(i,1);
  localStorage.setItem('tasks',JSON.stringify(tasks));
- loadTasks();
+ render();
 }
-loadTasks();
+render();
 
-// SUMMARIZER (better logic)
+// SUMMARIZER (WORKING)
 function summarize(){
  let text=document.getElementById('text').value;
+ if(!text) return;
  let sentences=text.split('.');
  document.getElementById('result').innerText=sentences.slice(0,3).join('.')+'.';
 }
