@@ -3,6 +3,15 @@
 <head>
 <title>Studiq - Ultimate Study Platform</title>
 
+<!-- GOOGLE ANALYTICS (REAL TRACKING) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX');
+</script>
+
 <style>
 /* ================= GLOBAL STYLE ================= */
 body {
@@ -98,6 +107,13 @@ button.main:hover {
   display: block;
   margin: auto;
 }
+
+/* VISITOR BOX */
+.visitor-box {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 20px;
+}
 </style>
 </head>
 
@@ -120,26 +136,13 @@ button.main:hover {
 <!-- HOME -->
 <div id="home" class="page active">
 <h1>Welcome & Study</h1>
-<p style="text-align:center;">
-"to be is to do" — zak123monkey
-</p>
 
-<!-- ✅ COUNTER ADDED -->
-<p style="text-align:center; font-size:18px;">
-👀 Visitors: <span id="visits">Loading...</span>
-</p>
+<div class="visitor-box">
+👥 Visitors: <span id="visits">Counting...</span>
+</div>
 
 <div class="box">
-<p>
-Welcome to Studiq — your all-in-one study system designed to help students focus better, stay organized,
-and improve productivity every single day. This platform combines tools like timers, planners, note summarization,
-and even a break game so you can study smarter without burnout.
-</p>
-
-<p>
-Use the timer to focus, the planner to organize your time, the summarizer to simplify your notes,
-and the tools section for productivity boosts. Everything here is designed to help you succeed.
-</p>
+<p>Welcome to Studiq — your all-in-one study system.</p>
 </div>
 </div>
 
@@ -147,12 +150,8 @@ and the tools section for productivity boosts. Everything here is designed to he
 <div id="timer" class="page">
 <div class="box">
 <h2>⏱️ Study Timer</h2>
-
-<p>Enter how many minutes you want to study. Stay focused until it ends.</p>
-
 <input id="mins" placeholder="Enter minutes">
-<button class="main" onclick="startTimer()">Start Timer</button>
-
+<button class="main" onclick="startTimer()">Start</button>
 <h1 id="time">00:00</h1>
 </div>
 </div>
@@ -160,18 +159,9 @@ and the tools section for productivity boosts. Everything here is designed to he
 <!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
-<h2>🧠 Smart Summarizer</h2>
-
-<p>
-Paste your notes below. This tool will:
-<br>• Shorten long paragraphs  
-<br>• Extract key ideas  
-<br>• Help you revise faster  
-</p>
-
-<textarea id="text" placeholder="Paste your notes here..."></textarea>
+<h2>🧠 Summarizer</h2>
+<textarea id="text"></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
-
 <div id="result"></div>
 </div>
 </div>
@@ -179,13 +169,8 @@ Paste your notes below. This tool will:
 <!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
-<h2>📅 Study Planner</h2>
-
-<p>Separate tasks with commas and it will create a daily plan.</p>
-
-<textarea id="plan" placeholder="Math, Science, English..."></textarea>
-<button class="main" onclick="makePlan()">Generate Plan</button>
-
+<textarea id="plan"></textarea>
+<button onclick="makePlan()">Plan</button>
 <div id="planOut"></div>
 </div>
 </div>
@@ -193,50 +178,21 @@ Paste your notes below. This tool will:
 <!-- TOOLS -->
 <div id="tools" class="page">
 <div class="box tools">
-
-<h3>💬 Motivation</h3>
-<button onclick="quote()">Get Motivation</button>
-<p id="quote"></p>
-
-<h3>📝 Task Manager</h3>
-<input id="taskInput" placeholder="Add a task">
+<input id="taskInput">
 <button onclick="addTask()">Add Task</button>
 <ul id="tasks"></ul>
-
-<h3>🎯 Goal Tracker</h3>
-<input id="goalInput" placeholder="Your main goal">
-<button onclick="setGoal()">Save Goal</button>
-<p id="goal"></p>
-
-<h3>🎮 Break Game</h3>
-<button onclick="openGame()">Play Game</button>
-<p>Move with arrow keys. Collect coins. Avoid the enemy.</p>
-
-<h3>🧠 Smart Study Tools</h3>
-<button onclick="tool('focus')">Deep Focus</button>
-<button onclick="tool('memory')">Memory Trick</button>
-<button onclick="tool('exam')">Exam Hack</button>
-<button onclick="tool('energy')">Energy Boost</button>
-<p id="toolOutput"></p>
-
 </div>
-</div>
-
-<!-- GAME -->
-<div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black;">
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
 
-/* ================= NAV ================= */
+/* NAV */
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* ================= TIMER ================= */
+/* TIMER */
 let t,int;
 function startTimer(){
   let m=document.getElementById("mins").value;
@@ -250,15 +206,14 @@ function startTimer(){
   },1000);
 }
 
-/* ================= SUMMARIZER ================= */
+/* SUMMARIZER */
 function summarize(){
   let text=document.getElementById("text").value;
-  let sentences=text.split(".");
-  let summary=sentences.slice(0,3).join(".");
-  document.getElementById("result").innerHTML="<b>Summary:</b><br>"+summary;
+  let summary=text.split(".").slice(0,3).join(".");
+  document.getElementById("result").innerHTML=summary;
 }
 
-/* ================= PLANNER ================= */
+/* PLANNER */
 function makePlan(){
   let t=document.getElementById("plan").value.split(",");
   let out="";
@@ -266,20 +221,7 @@ function makePlan(){
   document.getElementById("planOut").innerHTML=out;
 }
 
-/* ================= MOTIVATION ================= */
-let quotes=[
-"Stay focused and never give up",
-"Small progress is still progress",
-"Discipline beats motivation",
-"Consistency creates success"
-];
-
-function quote(){
-  document.getElementById("quote").innerText=
-  quotes[Math.floor(Math.random()*quotes.length)];
-}
-
-/* ================= TASKS ================= */
+/* TASKS */
 let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
 
 function render(){
@@ -291,116 +233,24 @@ function render(){
     list.appendChild(li);
   });
 }
-
 function addTask(){
   let t=document.getElementById("taskInput").value;
   tasks.push(t);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
-
 function del(i){
   tasks.splice(i,1);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
-
 render();
 
-/* ================= GOAL ================= */
-function setGoal(){
-  let g=document.getElementById("goalInput").value;
-  localStorage.setItem("goal",g);
-  document.getElementById("goal").innerText=g;
-}
-
-/* ================= GAME ================= */
-let canvas,ctx,player,enemy,coins,score,run;
-
-function openGame(){
-  document.getElementById("gameScreen").style.display="block";
-  canvas=document.getElementById("gameCanvas");
-  ctx=canvas.getContext("2d");
-
-  player={x:100,y:100};
-  enemy={x:400,y:300};
-  coins=[];
-  for(let i=0;i<15;i++){
-    coins.push({x:Math.random()*780,y:Math.random()*580});
-  }
-  score=0;
-  run=true;
-  loop();
-}
-
-function closeGame(){
-  run=false;
-  document.getElementById("gameScreen").style.display="none";
-}
-
-function loop(){
-  if(!run) return;
-
-  ctx.clearRect(0,0,800,600);
-
-  ctx.fillStyle="cyan";
-  ctx.fillRect(player.x,player.y,20,20);
-
-  ctx.fillStyle="red";
-  enemy.x+=(player.x-enemy.x)*0.02;
-  enemy.y+=(player.y-enemy.y)*0.02;
-  ctx.fillRect(enemy.x,enemy.y,25,25);
-
-  ctx.fillStyle="yellow";
-  coins.forEach((c,i)=>{
-    ctx.fillRect(c.x,c.y,10,10);
-    if(Math.abs(player.x-c.x)<15 && Math.abs(player.y-c.y)<15){
-      coins.splice(i,1);
-      score++;
-    }
-  });
-
-  if(Math.abs(player.x-enemy.x)<20){
-    ctx.fillStyle="white";
-    ctx.fillText("Game Over Score: "+score,250,300);
-    run=false;
-    return;
-  }
-
-  ctx.fillStyle="white";
-  ctx.fillText("Score: "+score,10,20);
-
-  requestAnimationFrame(loop);
-}
-
-document.addEventListener("keydown",(e)=>{
-  if(e.key==="ArrowUp") player.y-=10;
-  if(e.key==="ArrowDown") player.y+=10;
-  if(e.key==="ArrowLeft") player.x-=10;
-  if(e.key==="ArrowRight") player.x+=10;
-});
-
-/* ================= SMART TOOLS ================= */
-function tool(type){
-  let text="";
-  if(type==="focus") text="Focus 25 minutes, no distractions.";
-  if(type==="memory") text="Teach the topic out loud.";
-  if(type==="exam") text="Practice past papers.";
-  if(type==="energy") text="Drink water and move.";
-  document.getElementById("toolOutput").innerText=text;
-}
-
-/* ================= REAL COUNTER ================= */
-async function updateCounter(){
-  try {
-    let res = await fetch("https://api.countapi.xyz/hit/studiq-counter-final-001/visits");
-    let data = await res.json();
-    document.getElementById("visits").innerText = data.value;
-  } catch {
-    document.getElementById("visits").innerText = "1";
-  }
-}
-updateCounter();
+/* VISITOR COUNTER (LOCAL FALLBACK) */
+let count = localStorage.getItem("visits") || 0;
+count++;
+localStorage.setItem("visits", count);
+document.getElementById("visits").innerText = count;
 
 </script>
 
