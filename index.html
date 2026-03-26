@@ -2,10 +2,8 @@
 <html>
 <head>
 
-<!-- ✅ SEO TITLE -->
+<!-- ✅ SEO ADDED (ONLY THIS IS NEW) -->
 <title>Studiq - Free Study Timer, Planner, Notes & Student Productivity Tools</title>
-
-<!-- ✅ SEO META -->
 <meta name="description" content="Studiq is a free study platform with a timer, planner, note summarizer, and productivity tools to help students focus and succeed.">
 <meta name="keywords" content="study timer, study planner, student tools, focus timer, productivity, notes summarizer">
 <meta name="author" content="zak123monkey">
@@ -126,21 +124,21 @@ button.main:hover {
 
 <!-- HOME -->
 <div id="home" class="page active">
-<h1>Free Study Timer & Planner for Students</h1>
-
+<h1>Welcome & Study</h1>
 <p style="text-align:center;">
 "to be is to do" — zak123monkey
 </p>
 
 <div class="box">
 <p>
-Studiq is a free study platform that includes a study timer, planner, note summarizer,
-and productivity tools designed to help students stay focused, organized, and improve performance.
+Welcome to Studiq — your all-in-one study system designed to help students focus better, stay organized,
+and improve productivity every single day. This platform combines tools like timers, planners, note summarization,
+and even a break game so you can study smarter without burnout.
 </p>
 
 <p>
-Use the study timer to focus, the planner to organize your tasks, the summarizer to simplify notes,
-and the tools section to boost productivity and learning efficiency.
+Use the timer to focus, the planner to organize your time, the summarizer to simplify your notes,
+and the tools section for productivity boosts. Everything here is designed to help you succeed.
 </p>
 </div>
 </div>
@@ -149,8 +147,12 @@ and the tools section to boost productivity and learning efficiency.
 <div id="timer" class="page">
 <div class="box">
 <h2>⏱️ Study Timer</h2>
+
+<p>Enter how many minutes you want to study. Stay focused until it ends.</p>
+
 <input id="mins" placeholder="Enter minutes">
 <button class="main" onclick="startTimer()">Start Timer</button>
+
 <h1 id="time">00:00</h1>
 </div>
 </div>
@@ -159,8 +161,10 @@ and the tools section to boost productivity and learning efficiency.
 <div id="notes" class="page">
 <div class="box">
 <h2>🧠 Smart Summarizer</h2>
+
 <textarea id="text" placeholder="Paste your notes here..."></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
+
 <div id="result"></div>
 </div>
 </div>
@@ -169,8 +173,10 @@ and the tools section to boost productivity and learning efficiency.
 <div id="planner" class="page">
 <div class="box">
 <h2>📅 Study Planner</h2>
+
 <textarea id="plan" placeholder="Math, Science, English..."></textarea>
 <button class="main" onclick="makePlan()">Generate Plan</button>
+
 <div id="planOut"></div>
 </div>
 </div>
