@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Studiq - FINAL WORKING</title>
+<title>Studiq - FINAL UPGRADE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
@@ -14,12 +14,10 @@ body{
   linear-gradient(135deg,#020617,#1e3a8a,#0f172a);
   background-size:80px 80px,80px 80px,100% 100%;
 }
-
 nav{display:flex;justify-content:space-around;background:#000;padding:10px}
 button{cursor:pointer;padding:8px;border:none;border-radius:6px;margin:3px}
 .page{display:none;padding:20px}
 .active{display:block}
-
 .box{background:rgba(255,255,255,0.1);padding:15px;margin-top:10px;border-radius:10px}
 canvas{background:black}
 </style>
@@ -39,35 +37,16 @@ canvas{background:black}
 
 <div id="tools" class="page">
 <div class="box">
-<h3>20 Tools</h3>
+<h3>20 Features</h3>
 <input id="input" placeholder="Enter text or number">
-<button onclick="tool(1)">Uppercase</button>
-<button onclick="tool(2)">Lowercase</button>
-<button onclick="tool(3)">Reverse</button>
-<button onclick="tool(4)">Word Count</button>
-<button onclick="tool(5)">Random Number</button>
-<button onclick="tool(6)">Add 10</button>
-<button onclick="tool(7)">Subtract 5</button>
-<button onclick="tool(8)">Multiply 2</button>
-<button onclick="tool(9)">Divide 2</button>
-<button onclick="tool(10)">Square</button>
-<button onclick="tool(11)">Length</button>
-<button onclick="tool(12)">First Letter</button>
-<button onclick="tool(13)">Last Letter</button>
-<button onclick="tool(14)">Trim</button>
-<button onclick="tool(15)">Repeat</button>
-<button onclick="tool(16)">Random Choice</button>
-<button onclick="tool(17)">Capitalize</button>
-<button onclick="tool(18)">Remove Spaces</button>
-<button onclick="tool(19)">Add !</button>
-<button onclick="tool(20)">Clear</button>
+<div id="btns"></div>
 <p id="output"></p>
 </div>
 </div>
 
 <div id="game" class="page">
 <div class="box">
-<h3>Pacman</h3>
+<h3>Flappy Bird</h3>
 <canvas id="c" width="300" height="200"></canvas>
 <p>Score: <span id="score">0</span></p>
 </div>
@@ -79,65 +58,77 @@ function show(id){
  document.getElementById(id).classList.add('active');
 }
 
-// QUOTE (FIXED)
+// QUOTE
 let quotes=["Discipline wins","Focus up","Stay sharp","No excuses"];
 document.getElementById('quote').innerText=quotes[Math.floor(Math.random()*quotes.length)];
 
-// TOOLS (20 WORKING)
-function tool(n){
- let v=document.getElementById('input').value;
- let out="";
- switch(n){
-  case 1: out=v.toUpperCase(); break;
-  case 2: out=v.toLowerCase(); break;
-  case 3: out=v.split('').reverse().join(''); break;
-  case 4: out=v.split(' ').length; break;
-  case 5: out=Math.floor(Math.random()*100); break;
-  case 6: out=Number(v)+10; break;
-  case 7: out=Number(v)-5; break;
-  case 8: out=Number(v)*2; break;
-  case 9: out=Number(v)/2; break;
-  case 10: out=Number(v)*Number(v); break;
-  case 11: out=v.length; break;
-  case 12: out=v[0]; break;
-  case 13: out=v[v.length-1]; break;
-  case 14: out=v.trim(); break;
-  case 15: out=v+v; break;
-  case 16: out=v.split(' ')[Math.floor(Math.random()*v.split(' ').length)]; break;
-  case 17: out=v.charAt(0).toUpperCase()+v.slice(1); break;
-  case 18: out=v.replace(/ /g,''); break;
-  case 19: out=v+"!"; break;
-  case 20: out=""; break;
- }
- document.getElementById('output').innerText=out;
-}
+// 20 FEATURES AUTO
+let funcs=[
+ v=>v.toUpperCase(),
+ v=>v.toLowerCase(),
+ v=>v.split('').reverse().join(''),
+ v=>v.split(' ').length,
+ v=>Math.floor(Math.random()*100),
+ v=>Number(v)+10,
+ v=>Number(v)-5,
+ v=>Number(v)*2,
+ v=>Number(v)/2,
+ v=>Number(v)*Number(v),
+ v=>v.length,
+ v=>v[0],
+ v=>v[v.length-1],
+ v=>v.trim(),
+ v=>v+v,
+ v=>v.split(' ')[Math.floor(Math.random()*v.split(' ').length)],
+ v=>v.charAt(0).toUpperCase()+v.slice(1),
+ v=>v.replace(/ /g,''),
+ v=>v+"!",
+ v=>""
+];
 
-// PACMAN (FIXED WORKING)
+let btns=document.getElementById('btns');
+funcs.forEach((f,i)=>{
+ let b=document.createElement('button');
+ b.innerText='Tool '+(i+1);
+ b.onclick=()=>{
+  let v=document.getElementById('input').value;
+  document.getElementById('output').innerText=f(v);
+ };
+ btns.appendChild(b);
+});
+
+// FLAPPY BIRD
 let c=document.getElementById('c');
 let ctx=c.getContext('2d');
-let x=50, y=100, score=0;
-let dir=0;
+let birdY=100, vel=0, gravity=0.5;
+let pipes=[], score=0;
 
-document.addEventListener('keydown',e=>{
- if(e.key==='ArrowRight')dir=1;
- if(e.key==='ArrowLeft')dir=-1;
-});
+document.addEventListener('keydown',()=>vel=-8);
 
 function game(){
  ctx.clearRect(0,0,300,200);
- x+=dir*2;
- if(x<0)x=0;
- if(x>300)x=300;
-
- ctx.beginPath();
- ctx.arc(x,y,15,0.2*Math.PI,1.8*Math.PI);
- ctx.lineTo(x,y);
+ 
+ vel+=gravity;
+ birdY+=vel;
+ 
  ctx.fillStyle='yellow';
- ctx.fill();
-
- score++;
+ ctx.fillRect(50,birdY,15,15);
+ 
+ if(Math.random()<0.02){
+  let h=Math.random()*100;
+  pipes.push({x:300,top:h,bottom:h+40});
+ }
+ 
+ pipes.forEach(p=>{
+  p.x-=2;
+  ctx.fillStyle='green';
+  ctx.fillRect(p.x,0,20,p.top);
+  ctx.fillRect(p.x,p.bottom,20,200);
+  
+  if(p.x===50) score++;
+ });
+ 
  document.getElementById('score').innerText=score;
-
  requestAnimationFrame(game);
 }
 game();
