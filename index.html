@@ -24,7 +24,6 @@ nav button {
   background: none;
   border: none;
   color: white;
-  font-size: 16px;
   cursor: pointer;
 }
 
@@ -39,38 +38,26 @@ nav button {
 }
 
 textarea, input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 10px;
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
 }
 
 button.main {
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg,#3b82f6,#6366f1);
-  color: white;
-  cursor: pointer;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#6366f1;
+  color:white;
+  cursor:pointer;
 }
 
 #time { font-size:48px; text-align:center; }
-
 .progress { height:6px; background:#333; }
 .progress-bar { height:100%; width:0%; background:#22c55e; }
-
-#gameCanvas { display:block; margin:auto; }
-
-#gameUI {
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-}
 </style>
 </head>
 
@@ -89,29 +76,28 @@ button.main {
 <h1>Welcome to Studify</h1>
 
 <div class="box">
-<h2>📊 Dashboard</h2>
-<p>🔥 Streak: <span id="dashStreak"></span></p>
+<h3>🔥 Study Streak</h3>
+<p id="dashStreak"></p>
+
+<h3>⏳ Sessions Completed</h3>
+<p id="sessions">0</p>
 </div>
 
 <div class="box">
-<p>All-in-one study system to help you focus and improve daily.</p>
+<p>All-in-one study system.</p>
 </div>
 
-<!-- ✅ ONLY ADDITION -->
 <div class="box">
 <h3>Privacy Policy</h3>
-<p>This website may use cookies and third-party services such as Google AdSense to display advertisements. These services may collect anonymous data to improve user experience. By using this site, you agree to this policy.</p>
+<p>This site may use cookies and third-party services like ads.</p>
 </div>
 
-<div class="box">
-<a href="mailto:zmal4525@gmail.com">📩 Contact Support</a>
-</div>
 </div>
 
 <!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
-<input id="mins" placeholder="Enter minutes">
+<input id="mins">
 <button class="main" onclick="startTimer()">Start</button>
 <h1 id="time">00:00</h1>
 <div class="progress"><div id="bar" class="progress-bar"></div></div>
@@ -121,12 +107,6 @@ button.main {
 <!-- SUMMARIZER -->
 <div id="notes" class="page">
 <div class="box">
-<h2>🧠 Smart Summarizer</h2>
-
-<p style="opacity:0.7;font-size:14px;">
-Example: Photosynthesis is the process by which plants make food using sunlight. It occurs in chloroplasts. It produces oxygen as a byproduct.
-</p>
-
 <textarea id="text"></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
 <p id="result"></p>
@@ -136,12 +116,6 @@ Example: Photosynthesis is the process by which plants make food using sunlight.
 <!-- PLANNER -->
 <div id="planner" class="page">
 <div class="box">
-<h2>📅 Planner</h2>
-
-<p style="opacity:0.7;font-size:14px;">
-Example: Math, Science, English, History
-</p>
-
 <textarea id="plan"></textarea>
 <button class="main" onclick="makePlan()">Generate</button>
 <p id="planOut"></p>
@@ -166,22 +140,18 @@ Example: Math, Science, English, History
 <button class="main" onclick="setGoal()">Save</button>
 <p id="goal"></p>
 
-<h3>🎮 Game</h3>
-<button class="main" onclick="openGame()">Play</button>
+<!-- NEW FEATURE 1 -->
+<h3>📚 Flashcards</h3>
+<input id="q" placeholder="Question">
+<input id="a" placeholder="Answer">
+<button class="main" onclick="addCard()">Add Card</button>
+<div id="cards"></div>
+
+<!-- NEW FEATURE 2 -->
+<h3>⏳ Sessions Completed</h3>
+<p id="sessionCount"></p>
 
 </div>
-</div>
-
-<!-- GAME -->
-<div id="gameScreen" style="display:none; position:fixed; inset:0; background:black;">
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-
-<div id="gameUI">
-<div id="gameText">Click Start Game</div>
-<button onclick="startGame()">Start Game</button>
-</div>
-
-<button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
 </div>
 
 <script>
@@ -192,16 +162,10 @@ function showPage(id){
   document.getElementById(id).classList.add("active");
 }
 
-/* DASHBOARD */
-function updateDashboard(){
-  document.getElementById("dashStreak").innerText=localStorage.streak||0;
-}
-updateDashboard();
-
-/* TIMER */
+/* TIMER + SESSION TRACK */
 let timer;
 function startTimer(){
-  let m=parseInt(document.getElementById("mins").value);
+  let m=parseInt(mins.value);
   if(!m||m<=0) return;
 
   let t=m*60,l=t;
@@ -209,75 +173,71 @@ function startTimer(){
 
   timer=setInterval(()=>{
     l--;
-    document.getElementById("time").innerText=
-      Math.floor(l/60)+":"+("0"+l%60).slice(-2);
+    time.innerText=Math.floor(l/60)+":"+("0"+l%60).slice(-2);
+    bar.style.width=((t-l)/t)*100+"%";
 
-    document.getElementById("bar").style.width=((t-l)/t)*100+"%";
-
-    if(l<=0) clearInterval(timer);
+    if(l<=0){
+      clearInterval(timer);
+      let s=parseInt(localStorage.sessions||0)+1;
+      localStorage.sessions=s;
+      updateSessions();
+    }
   },1000);
 }
 
+/* SESSION DISPLAY */
+function updateSessions(){
+  let s=localStorage.sessions||0;
+  sessionCount.innerText=s;
+  sessions.innerText=s;
+}
+updateSessions();
+
 /* SUMMARIZER */
 function summarize(){
-  let t=document.getElementById("text").value.trim();
-  document.getElementById("result").innerText=
-    t?t.split(". ").slice(0,3).join(". "):"";
+  let t=text.value.trim();
+  result.innerText=t?t.split(". ").slice(0,3).join(". "):"";
 }
 
 /* PLANNER */
 function makePlan(){
-  let arr=document.getElementById("plan").value.split(",");
-  document.getElementById("planOut").innerHTML=
-    arr.filter(s=>s.trim()).map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
+  let arr=plan.value.split(",");
+  planOut.innerHTML=arr.map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
 }
 
 /* TASKS */
 let tasks=JSON.parse(localStorage.tasks||"[]");
-
 function renderTasks(){
-  let list=document.getElementById("tasks");
-  list.innerHTML="";
-  tasks.forEach((t,i)=>{
-    list.innerHTML+=`<li>${t} <button onclick="delTask(${i})">❌</button></li>`;
-  });
+  tasksEl.innerHTML="";
+  tasks.forEach((t,i)=>tasksEl.innerHTML+=`<li>${t} <button onclick="delTask(${i})">❌</button></li>`);
 }
-
 function addTask(){
-  let input=document.getElementById("taskInput");
-  if(!input.value.trim()) return;
-
-  tasks.push(input.value);
+  if(!taskInput.value.trim()) return;
+  tasks.push(taskInput.value);
   localStorage.tasks=JSON.stringify(tasks);
-  input.value="";
+  taskInput.value="";
   renderTasks();
 }
-
 function delTask(i){
   tasks.splice(i,1);
   localStorage.tasks=JSON.stringify(tasks);
   renderTasks();
 }
-
-/* ✅ FIXED ERROR HERE */
 document.addEventListener("keypress",e=>{
   if(e.key==="Enter") addTask();
 });
-
 renderTasks();
 
 /* GOAL */
-document.getElementById("goal").innerText=localStorage.goal||"";
+goal.innerText=localStorage.goal||"";
 function setGoal(){
-  let val=document.getElementById("goalInput").value;
-  localStorage.goal=val;
-  document.getElementById("goal").innerText=val;
+  localStorage.goal=goalInput.value;
+  goal.innerText=goalInput.value;
 }
 
 /* STREAK */
 let today=new Date().toDateString();
 let last=localStorage.last;
-
 if(last!==today){
   let s=parseInt(localStorage.streak||"0");
   let y=new Date(); y.setDate(y.getDate()-1);
@@ -285,112 +245,39 @@ if(last!==today){
   localStorage.streak=s;
   localStorage.last=today;
 }
-updateDashboard();
+dashStreak.innerText=localStorage.streak||0;
 
 /* QUOTE */
 function quote(){
   let q=["Stay focused","Keep going","Discipline wins","You got this"];
-  document.getElementById("quote").innerText=
-    q[Math.floor(Math.random()*q.length)];
+  quote.innerText=q[Math.floor(Math.random()*q.length)];
 }
 
-/* GAME */
-let canvas=document.getElementById("gameCanvas");
-let ctx=canvas.getContext("2d");
+/* FLASHCARDS */
+let cards=JSON.parse(localStorage.cards||"[]");
 
-let bird,pipes,velocity,gravity,running,frame,loopId;
-
-function openGame(){
-  document.getElementById("gameScreen").style.display="block";
-  resetGame();
-}
-
-function closeGame(){
-  document.getElementById("gameScreen").style.display="none";
-  running=false;
-  cancelAnimationFrame(loopId);
-}
-
-function resetGame(){
-  bird={x:100,y:250,size:20};
-  pipes=[];
-  velocity=0;
-  gravity=0.5;
-  running=false;
-  frame=0;
-
-  document.getElementById("gameUI").style.display="flex";
-  document.getElementById("gameText").innerText="Click Start Game";
-
-  draw();
-}
-
-function startGame(){
-  running=true;
-  document.getElementById("gameUI").style.display="none";
-  loop();
-}
-
-function loop(){
-  if(!running) return;
-  update();
-  draw();
-  loopId=requestAnimationFrame(loop);
-}
-
-function update(){
-  frame++;
-  velocity+=gravity;
-  bird.y+=velocity;
-
-  if(frame%90===0){
-    let gap=150;
-    let top=Math.random()*300+50;
-    pipes.push({x:800,top,bottom:top+gap});
-  }
-
-  pipes.forEach(p=>{
-    p.x-=3;
-    if(
-      bird.x<p.x+50 &&
-      bird.x+bird.size>p.x &&
-      (bird.y<p.top||bird.y+bird.size>p.bottom)
-    ){
-      endGame();
-    }
-  });
-
-  if(bird.y>600||bird.y<0) endGame();
-}
-
-function draw(){
-  ctx.fillStyle="#70c5ce";
-  ctx.fillRect(0,0,800,600);
-
-  ctx.fillStyle="yellow";
-  ctx.fillRect(bird.x,bird.y,bird.size,bird.size);
-
-  ctx.fillStyle="green";
-  pipes.forEach(p=>{
-    ctx.fillRect(p.x,0,50,p.top);
-    ctx.fillRect(p.x,p.bottom,50,600);
+function renderCards(){
+  cardsDiv.innerHTML="";
+  cards.forEach((c,i)=>{
+    cardsDiv.innerHTML+=`<div onclick="flip(${i})">${c.q}</div>`;
   });
 }
 
-document.addEventListener("keydown",e=>{
-  if(e.code==="Space" && running) velocity=-8;
-});
-
-canvas.addEventListener("click",()=>{
-  if(running) velocity=-8;
-});
-
-function endGame(){
-  running=false;
-  cancelAnimationFrame(loopId);
-  document.getElementById("gameUI").style.display="flex";
-  document.getElementById("gameText").innerText="Game Over - Click Start";
+function addCard(){
+  if(!q.value||!a.value) return;
+  cards.push({q:q.value,a:a.value,show:false});
+  localStorage.cards=JSON.stringify(cards);
+  q.value="";a.value="";
+  renderCards();
 }
+
+function flip(i){
+  cards[i].show=!cards[i].show;
+  cardsDiv.children[i].innerText=cards[i].show?cards[i].a:cards[i].q;
+}
+
+let cardsDiv=document.getElementById("cards");
+renderCards();
 
 </script>
 
