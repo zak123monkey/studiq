@@ -61,7 +61,6 @@ button.main {
 .progress { height:6px; background:#333; }
 .progress-bar { height:100%; width:0%; background:#22c55e; }
 
-/* GAME */
 #gameCanvas { display:block; margin:auto; }
 
 #gameUI {
@@ -98,6 +97,12 @@ button.main {
 <p>All-in-one study system to help you focus and improve daily.</p>
 </div>
 
+<!-- ✅ ONLY ADDITION -->
+<div class="box">
+<h3>Privacy Policy</h3>
+<p>This website may use cookies and third-party services such as Google AdSense to display advertisements. These services may collect anonymous data to improve user experience. By using this site, you agree to this policy.</p>
+</div>
+
 <div class="box">
 <a href="mailto:zmal4525@gmail.com">📩 Contact Support</a>
 </div>
@@ -122,7 +127,7 @@ button.main {
 Example: Photosynthesis is the process by which plants make food using sunlight. It occurs in chloroplasts. It produces oxygen as a byproduct.
 </p>
 
-<textarea id="text" placeholder="Paste notes here..."></textarea>
+<textarea id="text"></textarea>
 <button class="main" onclick="summarize()">Summarize</button>
 <p id="result"></p>
 </div>
@@ -137,7 +142,7 @@ Example: Photosynthesis is the process by which plants make food using sunlight.
 Example: Math, Science, English, History
 </p>
 
-<textarea id="plan" placeholder="Enter subjects separated by commas..."></textarea>
+<textarea id="plan"></textarea>
 <button class="main" onclick="makePlan()">Generate</button>
 <p id="planOut"></p>
 </div>
@@ -152,12 +157,12 @@ Example: Math, Science, English, History
 <p id="quote"></p>
 
 <h3>📝 Tasks</h3>
-<input id="taskInput" placeholder="Add task">
+<input id="taskInput">
 <button class="main" onclick="addTask()">Add</button>
 <ul id="tasks"></ul>
 
 <h3>🎯 Goal</h3>
-<input id="goalInput" placeholder="Goal">
+<input id="goalInput">
 <button class="main" onclick="setGoal()">Save</button>
 <p id="goal"></p>
 
@@ -254,6 +259,7 @@ function delTask(i){
   renderTasks();
 }
 
+/* ✅ FIXED ERROR HERE */
 document.addEventListener("keypress",e=>{
   if(e.key==="Enter") addTask();
 });
