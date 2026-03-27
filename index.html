@@ -53,6 +53,7 @@ button.main {
   border: none;
   background: linear-gradient(135deg,#3b82f6,#6366f1);
   color: white;
+  cursor: pointer;
 }
 
 #time { font-size:48px; text-align:center; }
@@ -105,8 +106,8 @@ button.main {
 <!-- TIMER -->
 <div id="timer" class="page">
 <div class="box">
-<input id="mins">
-<button onclick="startTimer()">Start</button>
+<input id="mins" placeholder="Enter minutes">
+<button class="main" onclick="startTimer()">Start</button>
 <h1 id="time">00:00</h1>
 <div class="progress"><div id="bar" class="progress-bar"></div></div>
 </div>
@@ -117,12 +118,12 @@ button.main {
 <div class="box">
 <h2>🧠 Smart Summarizer</h2>
 
-<p style="opacity:0.7; font-size:14px;">
+<p style="opacity:0.7;font-size:14px;">
 Example: Photosynthesis is the process by which plants make food using sunlight. It occurs in chloroplasts. It produces oxygen as a byproduct.
 </p>
 
 <textarea id="text" placeholder="Paste notes here..."></textarea>
-<button onclick="summarize()">Summarize</button>
+<button class="main" onclick="summarize()">Summarize</button>
 <p id="result"></p>
 </div>
 </div>
@@ -132,25 +133,36 @@ Example: Photosynthesis is the process by which plants make food using sunlight.
 <div class="box">
 <h2>📅 Planner</h2>
 
-<p style="opacity:0.7; font-size:14px;">
+<p style="opacity:0.7;font-size:14px;">
 Example: Math, Science, English, History
 </p>
 
 <textarea id="plan" placeholder="Enter subjects separated by commas..."></textarea>
-<button onclick="makePlan()">Generate</button>
+<button class="main" onclick="makePlan()">Generate</button>
 <p id="planOut"></p>
 </div>
 </div>
 
-<!-- TOOLS -->
+<!-- TOOLS (RESTORED) -->
 <div id="tools" class="page">
 <div class="box">
 
-<input id="taskInput">
-<button onclick="addTask()">Add</button>
+<h3>💬 Motivation</h3>
+<button class="main" onclick="quote()">Get Quote</button>
+<p id="quote"></p>
+
+<h3>📝 Tasks</h3>
+<input id="taskInput" placeholder="Add task">
+<button class="main" onclick="addTask()">Add</button>
 <ul id="tasks"></ul>
 
-<button onclick="openGame()">Play Game</button>
+<h3>🎯 Goal</h3>
+<input id="goalInput" placeholder="Goal">
+<button class="main" onclick="setGoal()">Save</button>
+<p id="goal"></p>
+
+<h3>🎮 Game</h3>
+<button class="main" onclick="openGame()">Play</button>
 
 </div>
 </div>
@@ -160,8 +172,8 @@ Example: Math, Science, English, History
 <canvas id="gameCanvas" width="800" height="600"></canvas>
 
 <div id="gameUI">
-<div id="gameText">Start Game</div>
-<button onclick="startGame()">Start</button>
+<div id="gameText">Click Start Game</div>
+<button onclick="startGame()">Start Game</button>
 </div>
 
 <button onclick="closeGame()" style="position:absolute;top:10px;right:10px;">Exit</button>
@@ -185,7 +197,7 @@ updateDashboard();
 let timer;
 function startTimer(){
   let m=parseInt(document.getElementById("mins").value);
-  if(!m) return;
+  if(!m||m<=0) return;
 
   let t=m*60,l=t;
   clearInterval(timer);
@@ -203,16 +215,16 @@ function startTimer(){
 
 /* SUMMARIZER */
 function summarize(){
-  let t=document.getElementById("text").value;
+  let t=document.getElementById("text").value.trim();
   document.getElementById("result").innerText=
-    t.split(". ").slice(0,3).join(". ");
+    t?t.split(". ").slice(0,3).join(". "):"";
 }
 
 /* PLANNER */
 function makePlan(){
   let arr=document.getElementById("plan").value.split(",");
   document.getElementById("planOut").innerHTML=
-    arr.map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
+    arr.filter(s=>s.trim()).map((s,i)=>"Day "+(i+1)+": "+s).join("<br>");
 }
 
 /* TASKS */
@@ -221,8 +233,8 @@ let tasks=JSON.parse(localStorage.tasks||"[]");
 function renderTasks(){
   let list=document.getElementById("tasks");
   list.innerHTML="";
-  tasks.forEach(t=>{
-    list.innerHTML+=`<li>${t}</li>`;
+  tasks.forEach((t,i)=>{
+    list.innerHTML+=`<li>${t} <button onclick="delTask(${i})">❌</button></li>`;
   });
 }
 
@@ -235,13 +247,48 @@ function addTask(){
   input.value="";
   renderTasks();
 }
+
+function delTask(i){
+  tasks.splice(i,1);
+  localStorage.tasks=JSON.stringify(tasks);
+  renderTasks();
+}
+
 renderTasks();
 
-/* GAME */
+/* GOAL */
+document.getElementById("goal").innerText=localStorage.goal||"";
+function setGoal(){
+  let val=document.getElementById("goalInput").value;
+  localStorage.goal=val;
+  document.getElementById("goal").innerText=val;
+}
+
+/* STREAK */
+let today=new Date().toDateString();
+let last=localStorage.last;
+
+if(last!==today){
+  let s=parseInt(localStorage.streak||"0");
+  let y=new Date(); y.setDate(y.getDate()-1);
+  s=(last===y.toDateString())?s+1:1;
+  localStorage.streak=s;
+  localStorage.last=today;
+}
+updateDashboard();
+
+/* QUOTE */
+function quote(){
+  let q=["Stay focused","Keep going","Discipline wins","You got this"];
+  document.getElementById("quote").innerText=
+    q[Math.floor(Math.random()*q.length)];
+}
+
+/* FLAPPY BIRD */
 let canvas=document.getElementById("gameCanvas");
 let ctx=canvas.getContext("2d");
 
-let bird, pipes, velocity, gravity, running, frame;
+let bird,pipes,velocity,gravity,running,frame,loopId;
 
 function openGame(){
   document.getElementById("gameScreen").style.display="block";
@@ -251,6 +298,7 @@ function openGame(){
 function closeGame(){
   document.getElementById("gameScreen").style.display="none";
   running=false;
+  cancelAnimationFrame(loopId);
 }
 
 function resetGame(){
@@ -260,11 +308,16 @@ function resetGame(){
   gravity=0.5;
   running=false;
   frame=0;
+
+  document.getElementById("gameUI").style.display="flex";
+  document.getElementById("gameText").innerText="Click Start Game";
+
   draw();
 }
 
 function startGame(){
   running=true;
+  document.getElementById("gameUI").style.display="none";
   loop();
 }
 
@@ -272,7 +325,7 @@ function loop(){
   if(!running) return;
   update();
   draw();
-  requestAnimationFrame(loop);
+  loopId=requestAnimationFrame(loop);
 }
 
 function update(){
@@ -290,12 +343,14 @@ function update(){
     p.x-=3;
     if(
       bird.x<p.x+50 &&
-      bird.x+20>p.x &&
-      (bird.y<p.top||bird.y+20>p.bottom)
+      bird.x+bird.size>p.x &&
+      (bird.y<p.top||bird.y+bird.size>p.bottom)
     ){
-      running=false;
+      endGame();
     }
   });
+
+  if(bird.y>600||bird.y<0) endGame();
 }
 
 function draw(){
@@ -303,7 +358,7 @@ function draw(){
   ctx.fillRect(0,0,800,600);
 
   ctx.fillStyle="yellow";
-  ctx.fillRect(bird.x,bird.y,20,20);
+  ctx.fillRect(bird.x,bird.y,bird.size,bird.size);
 
   ctx.fillStyle="green";
   pipes.forEach(p=>{
@@ -313,10 +368,19 @@ function draw(){
 }
 
 document.addEventListener("keydown",e=>{
-  if(e.code==="Space") velocity=-8;
+  if(e.code==="Space" && running) velocity=-8;
 });
 
-canvas.addEventListener("click",()=>velocity=-8);
+canvas.addEventListener("click",()=>{
+  if(running) velocity=-8;
+});
+
+function endGame(){
+  running=false;
+  cancelAnimationFrame(loopId);
+  document.getElementById("gameUI").style.display="flex";
+  document.getElementById("gameText").innerText="Game Over - Click Start";
+}
 
 </script>
 
