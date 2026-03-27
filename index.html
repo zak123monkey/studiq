@@ -68,6 +68,12 @@ button.main {
 
 <body>
 
+<!-- 🔥 ADSENSE (PUT YOUR CODE HERE) -->
+<div style="text-align:center; margin-top:10px;">
+  <!-- Replace this with your AdSense code -->
+  <p>Ad space</p>
+</div>
+
 <nav>
 <button onclick="showPage('home')">Home</button>
 <button onclick="showPage('timer')">Timer</button>
@@ -143,22 +149,32 @@ button.main {
 </div>
 
 <script>
+// NAV
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-// TIMER
+// TIMER (FIXED)
 let t,int,total;
 function startTimer(){
-  let m=document.getElementById("mins").value;
+  let m=parseInt(document.getElementById("mins").value);
+  if(!m || m<=0) return alert("Enter valid minutes");
+
   t=m*60; total=t;
   clearInterval(int);
+
   int=setInterval(()=>{
     let min=Math.floor(t/60);
     let sec=t%60;
-    time.innerText=min+":"+(sec<10?"0":"")+sec;
-    bar.style.width=((total-t)/total)*100+"%";
+
+    document.getElementById("time").innerText=
+      min+":"+(sec<10?"0":"")+sec;
+
+    document.getElementById("bar").style.width=
+      ((total-t)/total)*100+"%";
+
+    if(t<=0){ clearInterval(int); alert("Done!"); }
     t--;
   },1000);
 }
@@ -194,6 +210,7 @@ function quote(){
 
 // TASKS
 let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
+
 function render(){
   let list=document.getElementById("tasks");
   list.innerHTML="";
@@ -203,12 +220,15 @@ function render(){
     list.appendChild(li);
   });
 }
+
 function addTask(){
   let t=document.getElementById("taskInput").value;
+  if(!t) return;
   tasks.push(t);
   localStorage.setItem("tasks",JSON.stringify(tasks));
   render();
 }
+
 function del(i){
   tasks.splice(i,1);
   localStorage.setItem("tasks",JSON.stringify(tasks));
@@ -229,8 +249,7 @@ function updateStreak(){
   let lastDay = localStorage.getItem("lastDay");
   let streak = parseInt(localStorage.getItem("streak")) || 0;
 
-  if(lastDay === today) {
-  } else {
+  if(lastDay !== today){
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate()-1);
 
@@ -248,31 +267,55 @@ function updateStreak(){
 }
 updateStreak();
 
-// GAME
+// GAME (FIXED MOVEMENT SAFETY)
 let canvas,ctx,player,enemy,coins,run;
+
 function openGame(){
   document.getElementById("gameScreen").style.display="block";
   canvas=document.getElementById("gameCanvas");
   ctx=canvas.getContext("2d");
-  player={x:100,y:100}; enemy={x:400,y:300}; coins=[];
-  for(let i=0;i<10;i++) coins.push({x:Math.random()*780,y:Math.random()*580});
-  run=true; loop();
+
+  player={x:100,y:100};
+  enemy={x:400,y:300};
+  coins=[];
+
+  for(let i=0;i<10;i++)
+    coins.push({x:Math.random()*780,y:Math.random()*580});
+
+  run=true;
+  loop();
 }
-function closeGame(){run=false; document.getElementById("gameScreen").style.display="none";}
+
+function closeGame(){
+  run=false;
+  document.getElementById("gameScreen").style.display="none";
+}
+
 function loop(){
   if(!run) return;
+
   ctx.clearRect(0,0,800,600);
-  ctx.fillStyle="cyan"; ctx.fillRect(player.x,player.y,20,20);
-  ctx.fillStyle="red"; enemy.x+=(player.x-enemy.x)*0.02; enemy.y+=(player.y-enemy.y)*0.02; ctx.fillRect(enemy.x,enemy.y,25,25);
-  ctx.fillStyle="yellow"; coins.forEach(c=>ctx.fillRect(c.x,c.y,10,10));
+
+  ctx.fillStyle="cyan";
+  ctx.fillRect(player.x,player.y,20,20);
+
+  ctx.fillStyle="red";
+  enemy.x+=(player.x-enemy.x)*0.02;
+  enemy.y+=(player.y-enemy.y)*0.02;
+  ctx.fillRect(enemy.x,enemy.y,25,25);
+
+  ctx.fillStyle="yellow";
+  coins.forEach(c=>ctx.fillRect(c.x,c.y,10,10));
+
   requestAnimationFrame(loop);
 }
 
 document.addEventListener("keydown",(e)=>{
-  if(e.key==="ArrowUp") player.y-=10;
-  if(e.key==="ArrowDown") player.y+=10;
-  if(e.key==="ArrowLeft") player.x-=10;
-  if(e.key==="ArrowRight") player.x+=10;
+  if(!player) return;
+  if(e.key==="ArrowUp") player.y=Math.max(0,player.y-10);
+  if(e.key==="ArrowDown") player.y=Math.min(580,player.y+10);
+  if(e.key==="ArrowLeft") player.x=Math.max(0,player.x-10);
+  if(e.key==="ArrowRight") player.x=Math.min(780,player.x+10);
 });
 </script>
 
